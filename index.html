@@ -37,6 +37,16 @@ button.start:disabled{opacity:.7;cursor:default}
 .pad button{width:62px;height:62px;border-radius:50%;border:1px solid #ffffff70;background:#00000040;color:#fff;font-size:22px;font-weight:700}
 .pad button.on{background:#ec1489aa}
 @media (pointer:coarse){.pad{display:flex}}
+/* mobile mode, from 991px wide down: touch buttons on and smaller, a taller game, no shortcut labels */
+@media (max-width:991px){
+  .pad{display:flex;gap:7px;bottom:10px}.pad.l{left:10px}.pad.r{right:10px}
+  .pad button{width:46px;height:46px;font-size:17px}.pad button#rst,.pad button#ext,.pad button[data-k="hand"]{font-size:10px!important}
+  .keys{display:none!important}
+  .stage{aspect-ratio:3/4;max-height:88vh}
+  .stage canvas.map{width:84px;height:84px}
+  .hud{gap:12px;left:10px;top:9px}.hud b{font-size:16px}.hud small{font-size:9px}
+  .cover{background-size:auto,135% auto;background-position:center,50% 0;padding-bottom:12%}
+}
 .keys{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:13px}
 kbd{font:inherit;font-size:12px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 .credit{font-size:12px}
@@ -52,7 +62,6 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
 </style>
 
 <div class="wrap">
-  <h1>Antimatter Drive, prototype</h1>
   <div class="stage" id="stage">
     <div class="cover" id="cover">
       <button class="start" id="start">Start driving</button>
@@ -69,8 +78,6 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
     <div class="pad r" id="padR" hidden><button id="ext" style="font-size:13px">EXIT</button><button data-k="hand" style="font-size:13px">HB</button><button id="rst" style="font-size:13px">RST</button><button data-k="brake">B</button><button data-k="gas">GO</button></div>
   </div>
   <div class="keys"><span><kbd>W</kbd> or <kbd>&uarr;</kbd> accelerate</span><span><kbd>S</kbd> or <kbd>&darr;</kbd> brake and reverse</span><span><kbd>A</kbd> <kbd>D</kbd> or <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer</span><span><kbd>Space</kbd> handbrake</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> back on track</span><span><kbd>Enter</kbd> restart from the grid</span><span><kbd>Esc</kbd> exit</span></div>
-  <p>Prototype. Grass slows you down, the barriers stop you, and laps are timed from the start line.</p>
-  <p class="credit">Car model: "Ferrari 296 GT3 | www.vecarz.com" by vecarz on Sketchfab, CC BY-NC 4.0, simplified and repainted. For this private prototype only, not for commercial use.</p>
 </div>
 
 <script>
@@ -321,7 +328,7 @@ function init(model){
     if(sliding&&onRoad){for(var si=0;si<2;si++){var lt=(si?1:-1)*0.86;skid(si,st.x-Math.cos(st.h)*1.42-Math.sin(st.h)*lt,st.z-Math.sin(st.h)*1.42+Math.cos(st.h)*lt,st.va)}}else{skLast[0]=skLast[1]=null}
     var spd=Math.abs(st.v),far=st.cam===1,back=(far?13:7.6)+spd*0.035,ch=st.h-st.slip*0.45,tx=st.x-Math.cos(ch)*back,tz=st.z-Math.sin(ch)*back,kf=Math.min(1,dt*(far?3.2:5.5));
     camPos.x+=(tx-camPos.x)*kf;camPos.z+=(tz-camPos.z)*kf;camPos.y=far?5.6:2.75;
-    var fov=(st.cam===2?70:55)+Math.min(13,spd*0.22);if(Math.abs(cam.fov-fov)>0.05){cam.fov+=(fov-cam.fov)*Math.min(1,dt*4);cam.updateProjectionMatrix()}
+    var fov=(st.cam===2?70:55)+Math.min(13,spd*0.22)+(cam.aspect<1?16:0);if(Math.abs(cam.fov-fov)>0.05){cam.fov+=(fov-cam.fov)*Math.min(1,dt*4);cam.updateProjectionMatrix()}
     var ahead=5+spd*0.05,turn=st.steer*Math.min(1,spd/14)*3.2;cam.position.copy(camPos);look.set(st.x+Math.cos(st.h)*ahead-Math.sin(st.h)*turn,0.95,st.z+Math.sin(st.h)*ahead+Math.cos(st.h)*turn);
     if(st.cam===2){cam.position.set(st.x+Math.cos(st.h)*0.25,1.32,st.z+Math.sin(st.h)*0.25);look.set(st.x+Math.cos(st.h)*12-Math.sin(st.h)*turn,0.9,st.z+Math.sin(st.h)*12+Math.cos(st.h)*turn)}
     if(window.__view){var a=st.h+window.__view[0];cam.position.set(st.x+Math.cos(a)*window.__view[1],window.__view[2],st.z+Math.sin(a)*window.__view[1]);look.set(st.x,window.__view[3]===undefined?0.6:window.__view[3],st.z)}
