@@ -138,7 +138,7 @@ function init(model){
   var asphaltTex=canvasTex(256,256,speckle('#3f4046',70,5200),1,1),grassTex=canvasTex(256,256,speckle('#5f8f45',60,4200),90,90),gravelTex=canvasTex(128,128,speckle('#c9b68f',70,1800),1,1);
 
   // ---- track: a closed circuit with a start straight, a chicane, esses and a run of linked corners ----
-  var raw=[[0,0],[80,0],[130,6],[158,-20],[192,-14],[204,24],[182,62],[196,100],[168,132],[128,120],[108,90],[76,86],[56,114],[66,150],[34,176],[-10,166],[-34,132],[-70,140],[-96,108],[-78,72],[-98,36],[-66,-14]];
+  var raw=[[0,0],[80,0],[130,6],[158,-20],[192,-14],[204,24],[184,64],[190,104],[158,128],[122,112],[100,84],[66,86],[48,116],[40,152],[0,164],[-40,146],[-70,112],[-84,70],[-92,28],[-64,-14]];
   var curve=new T.CatmullRomCurve3(raw.map(function(p){return new T.Vector3(p[0],0,p[1])}),true,'catmullrom',0.5);
   var N=800,HALF=6.5,WALL=HALF+9.5,pts=curve.getSpacedPoints(N),P=[],Tn=[],K=[],LEN=curve.getLength();
   for(var i=0;i<N;i++){P.push(pts[i]);Tn.push(curve.getTangentAt(i/N).normalize())}
@@ -321,7 +321,7 @@ function init(model){
   var NSK=420,skG=new T.PlaneGeometry(0.34,0.9),skids=new T.InstancedMesh(skG,new T.MeshBasicMaterial({color:0x0a0a0c,transparent:true,opacity:0.42,depthWrite:false}),NSK),ski=0,skE=new T.Euler(),skLast=[null,null];skids.count=0;skids.frustumCulled=false;scene.add(skids);
   function skid(i,x,z,hd){var L=skLast[i];if(L&&(L[0]-x)*(L[0]-x)+(L[1]-z)*(L[1]-z)<0.5)return;skLast[i]=[x,z];skE.set(-Math.PI/2,0,-hd+Math.PI/2,'YXZ');skE.set(-Math.PI/2,-hd+Math.PI/2,0,'YXZ');Q4.setFromEuler(skE);M4.compose(V3.set(x,0.025,z),Q4,S3.set(1,1,1));skids.setMatrixAt(ski%NSK,M4);ski++;skids.count=Math.min(ski,NSK);skids.instanceMatrix.needsUpdate=true}
   // ---- lap times: the best is kept on this device; every finished lap can be shared with a screenshot of the game ----
-  var BEST_KEY='am-drive-best-v4',SHARE_URL='https://antimatter.com/'
+  var BEST_KEY='am-drive-best-v5',SHARE_URL='https://antimatter.com/'
   var lastLap=0,shareT=0,snapWanted=0,want=null,FONT='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
   var X_HANDLE='antimattergroup';     // the antimatter handle, the same on X, LinkedIn and Instagram, without the @
   function shareText(net){return 'I just did '+fmt(shareT)+' in the Antimatter Ferrari 296 GT3. Think you can beat it? @'+X_HANDLE+' #antimatterGT3'}
