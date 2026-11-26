@@ -25,6 +25,11 @@ p{margin:0;color:var(--muted);max-width:65ch}
 button.start{font:inherit;font-weight:700;font-size:17px;line-height:1.2;color:#fff;background:#883ae1;border:0;border-radius:999px;padding:14px 28px;cursor:pointer}
 button.start:hover{background:#7a2fd0}
 button.start:disabled{opacity:.7;cursor:default}
+.who{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.cover.sharing .who{display:none}
+.who input,.who select{font:inherit;font-size:18px;font-weight:600;line-height:1.2;color:#fff;background:#0b0a1cb3;border:1.5px solid #ffffffa6;border-radius:999px;padding:14px 22px;width:270px;outline:none;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+.who select{padding-right:44px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#fff 50%),linear-gradient(135deg,#fff 50%,transparent 50%);background-position:calc(100% - 25px) 55%,calc(100% - 18px) 55%;background-size:7px 7px;background-repeat:no-repeat}
+.who select option{color:#15143a;background:#fff}
+.who input::placeholder{color:#ffffffa6}.who input:focus,.who select:focus{border-color:#b98cff;box-shadow:0 0 0 3px #883ae166}
 .share{display:flex;flex-direction:column;align-items:center;gap:9px;color:#fff;text-shadow:0 1px 4px #000c}
 .share img{display:block;width:auto;height:auto;max-width:min(58%,440px);max-height:min(46vh,300px);border-radius:10px;border:1px solid #ffffff40;box-shadow:0 10px 34px #000b}
 .cover.sharing::before{content:"";position:absolute;inset:0;background:#0b0a1cc4}.cover.sharing>*{position:relative}.cover.sharing{justify-content:center;padding-bottom:20px}
@@ -54,7 +59,7 @@ button.start:disabled{opacity:.7;cursor:default}
   .pad{display:flex;gap:7px;bottom:10px}.pad.l{left:10px}.pad.r{right:10px}
   .pad button{width:46px;height:46px;font-size:17px}.pad button#rst,.pad button#ext{font-size:10px!important}
   .keys{display:none!important}
-  .cta{bottom:66px;font-size:13px;padding:8px 14px}.share img{max-width:62%;max-height:min(30vh,210px)}.share .tagcta{font-size:15.5px}.share{gap:7px}.share .row{gap:6px}.pill{font-size:12.5px;padding:7px 13px}.cover.sharing{gap:10px;padding:12px}.cover.sharing .start{padding:11px 24px}
+  .cta{bottom:66px;font-size:13px;padding:8px 14px}.share img{max-width:62%;max-height:min(30vh,210px)}.who{width:100%;max-width:320px}.who input,.who select{width:100%;font-size:17px;padding:12px 20px}.share .tagcta{font-size:15.5px}.share{gap:7px}.share .row{gap:6px}.pill{font-size:12.5px;padding:7px 13px}.cover.sharing{gap:10px;padding:12px}.cover.sharing .start{padding:11px 24px}
   .stage{aspect-ratio:3/4;max-height:88vh}
   .stage canvas.map{width:84px;height:84px}
   .hud{gap:10px;left:10px;top:9px;flex-wrap:wrap;max-width:calc(100% - 110px)}.hud b{font-size:16px}.hud small{font-size:9px}
@@ -84,6 +89,10 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
         <div class="hint" id="shHint"></div>
       </div>
+      <div class="who" id="who">
+        <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
+        <select id="whoTeam" aria-label="Your team"><option value="0">Team Antimatter</option><option value="2">Team GA Invest</option><option value="3">Team Policloud</option><option value="4">Team Hivenet</option><option value="5">Team Elevatus</option><option value="6">Team global.ventures</option><option value="7">Team Shadeform</option></select>
+      </div>
       <button class="start" id="start">Start driving</button>
       <div class="bar" id="bar" hidden><i></i></div>
 
@@ -108,6 +117,13 @@ var LIBS=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','h
 var CAR_URL='car.json',LIVERY_URL='livery.jpg',LOGO_URL='logo.png';
 var $=function(id){return document.getElementById(id)};
 var stage=$('stage'),startBtn=$('start'),bar=$('bar'),fill=bar.firstElementChild;
+// the driver's name and team: chosen on the cover, kept on this device, shown on the share image
+var who={name:'',team:0},WHO_KEY='am-drive-who';
+try{var w0=JSON.parse(localStorage.getItem(WHO_KEY)||'null');if(w0){who.name=String(w0.name||'').slice(0,16);who.team=+w0.team||0}}catch(e){}
+$('whoName').value=who.name;$('whoTeam').value=String(who.team);if($('whoTeam').selectedIndex<0)$('whoTeam').selectedIndex=0;
+function whoChanged(){who.name=$('whoName').value.replace(/\s+/g,' ').slice(0,16);who.team=+$('whoTeam').value||0;try{localStorage.setItem(WHO_KEY,JSON.stringify(who))}catch(e){}if(window.__amWho)window.__amWho()}
+$('whoName').addEventListener('input',whoChanged);$('whoTeam').addEventListener('change',whoChanged);
+$('whoName').addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter'){e.preventDefault();$('whoName').blur();startBtn.click()}});
 function loadScript(src){return new Promise(function(ok,no){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 startBtn.addEventListener('click',function(){
   if(window.__amResume){window.__amResume();return}
@@ -138,7 +154,7 @@ function init(model){
   var asphaltTex=canvasTex(256,256,speckle('#3f4046',70,5200),1,1),grassTex=canvasTex(256,256,speckle('#5f8f45',60,4200),90,90),gravelTex=canvasTex(128,128,speckle('#c9b68f',70,1800),1,1);
 
   // ---- track: a closed circuit with a start straight, a chicane, esses and a run of linked corners ----
-  var raw=[[0,0],[80,0],[130,6],[158,-20],[192,-14],[204,24],[184,64],[190,104],[158,128],[122,112],[100,84],[66,86],[48,116],[40,152],[0,164],[-40,146],[-70,112],[-84,70],[-92,28],[-64,-14]];
+  var raw=[[0,0],[80,0],[130,6],[158,-20],[192,-14],[204,24],[184,64],[190,104],[158,128],[122,112],[100,84],[66,86],[48,116],[40,152],[0,164],[-40,146],[-70,116],[-68,84],[-92,58],[-90,22],[-62,-14]];
   var curve=new T.CatmullRomCurve3(raw.map(function(p){return new T.Vector3(p[0],0,p[1])}),true,'catmullrom',0.5);
   var N=800,HALF=6.5,WALL=HALF+9.5,pts=curve.getSpacedPoints(N),P=[],Tn=[],K=[],LEN=curve.getLength();
   for(var i=0;i<N;i++){P.push(pts[i]);Tn.push(curve.getTangentAt(i/N).normalize())}
@@ -321,7 +337,7 @@ function init(model){
   var NSK=420,skG=new T.PlaneGeometry(0.34,0.9),skids=new T.InstancedMesh(skG,new T.MeshBasicMaterial({color:0x0a0a0c,transparent:true,opacity:0.42,depthWrite:false}),NSK),ski=0,skE=new T.Euler(),skLast=[null,null];skids.count=0;skids.frustumCulled=false;scene.add(skids);
   function skid(i,x,z,hd){var L=skLast[i];if(L&&(L[0]-x)*(L[0]-x)+(L[1]-z)*(L[1]-z)<0.5)return;skLast[i]=[x,z];skE.set(-Math.PI/2,0,-hd+Math.PI/2,'YXZ');skE.set(-Math.PI/2,-hd+Math.PI/2,0,'YXZ');Q4.setFromEuler(skE);M4.compose(V3.set(x,0.025,z),Q4,S3.set(1,1,1));skids.setMatrixAt(ski%NSK,M4);ski++;skids.count=Math.min(ski,NSK);skids.instanceMatrix.needsUpdate=true}
   // ---- lap times: the best is kept on this device; every finished lap can be shared with a screenshot of the game ----
-  var BEST_KEY='am-drive-best-v5',SHARE_URL='https://antimatter.com/'
+  var BEST_KEY='am-drive-best-v6',SHARE_URL='https://antimatter.com/'
   var lastLap=0,shareT=0,snapWanted=0,want=null,FONT='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
   var X_HANDLE='antimattergroup';     // the antimatter handle, the same on X, LinkedIn and Instagram, without the @
   function shareText(net){return 'I just did '+fmt(shareT)+' in the Antimatter Ferrari 296 GT3. Think you can beat it? @'+X_HANDLE+' #antimatterGT3'}
@@ -341,13 +357,16 @@ function init(model){
   function paint(f,t){try{var W=FORMATS[f][0],H=FORMATS[f][1],c=document.createElement('canvas'),g=c.getContext('2d'),tall=H>=W,story=H>W*1.5,pad=Math.round(W*0.05);c.width=W;c.height=H;drawBase(g,W,H);
     var gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(11,10,28,0.72)');gr.addColorStop(story?0.3:0.26,'rgba(11,10,28,0)');gr.addColorStop(story?0.55:0.5,'rgba(11,10,28,0)');gr.addColorStop(1,'rgba(11,10,28,0.95)');g.fillStyle=gr;g.fillRect(0,0,W,H);
     var top=story?250:pad*0.9,by=H-(story?300:pad);
-    if(logoImg.complete&&logoImg.naturalWidth){var lw=W*(tall?0.4:0.27);g.drawImage(logoImg,pad,top,lw,lw*logoImg.naturalHeight/logoImg.naturalWidth)}
+    var lw=W*(tall?0.4:0.27),lgh=lw*184/1024;if(logoImg.complete&&logoImg.naturalWidth){lgh=lw*logoImg.naturalHeight/logoImg.naturalWidth;g.drawImage(logoImg,pad,top,lw,lgh)}
+    if(who.team>0&&atlasImg.complete&&atlasImg.naturalWidth){     // the chosen team: its logo on a dark plate, top right
+      var cw=W*(tall?0.36:0.24),chh=cw*114/840,cx=W-pad-cw,cy=top+(lgh-chh)/2,rr=chh*0.28,px=cw*0.03;g.save();g.beginPath();g.moveTo(cx-px+rr,cy-px);g.arcTo(cx+cw+px,cy-px,cx+cw+px,cy+chh+px,rr);g.arcTo(cx+cw+px,cy+chh+px,cx-px,cy+chh+px,rr);g.arcTo(cx-px,cy+chh+px,cx-px,cy-px,rr);g.arcTo(cx-px,cy-px,cx+cw+px,cy-px,rr);g.closePath();g.fillStyle='#1b1a3a';g.fill();g.clip();
+      g.drawImage(atlasImg,92,who.team*CELL_H+16,840,114,cx,cy,cw,chh);g.restore();g.fillStyle='#fff';g.font='700 '+Math.round(W*(tall?0.022:0.015))+'px '+FONT;g.textAlign='right';g.textBaseline='alphabetic';g.fillText('TEAM',W-pad,cy-px-W*0.008);g.textAlign='left'}
     g.fillStyle='#fff';g.textBaseline='alphabetic';var ts=Math.round(W*(story?0.19:tall?0.168:0.094)),ss=Math.round(W*(tall?0.036:0.025));
     if(tall){g.font='600 '+ss+'px '+FONT;g.fillText('Think you can beat it?',pad,by);g.fillStyle='#e9b8ff';g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*2.1)}
-    g.font='800 '+ts+'px '+FONT;g.fillText(fmt(t),pad-ts*0.04,by);g.font='700 '+Math.round(ss*0.9)+'px '+FONT;g.fillText('LAP TIME',pad,by-ts*0.9);
+    g.font='800 '+ts+'px '+FONT;g.fillText(fmt(t),pad-ts*0.04,by);g.font='700 '+Math.round(ss*0.9)+'px '+FONT;g.fillText('LAP TIME',pad,by-ts*0.9);var nm=who.name.trim();if(nm){g.font='700 '+Math.round(ss*1.45)+'px '+FONT;g.fillStyle='#e9b8ff';g.shadowColor='rgba(11,10,28,0.9)';g.shadowBlur=ss*0.6;g.fillText(nm,pad,by-ts*0.9-ss*1.35);g.fillText(nm,pad,by-ts*0.9-ss*1.35);g.shadowBlur=0;g.shadowColor='transparent';g.fillStyle='#fff'}     // the username sits on its own line above the label
     if(!tall){g.font='600 '+ss+'px '+FONT;g.textAlign='right';g.fillText('Think you can beat it?',W-pad,by-ss*1.4);g.fillStyle='#e9b8ff';g.fillText('antimatter.com',W-pad,by)}
     c.toBlob(function(bp){if(!bp||t!==shareT)return;cards[f]={png:bp,url:URL.createObjectURL(bp)};if(f===curFmt)setFmt(f)},'image/png')}catch(e){}}
-  function makeCards(t){Object.keys(cards).forEach(function(k){URL.revokeObjectURL(cards[k].url)});cards={};curFmt=(window.matchMedia&&window.matchMedia('(max-width:991px)').matches)?'sq':'li';loadSrc(function(){Object.keys(FORMATS).forEach(function(f){paint(f,t)})})}
+  function makeCards(t,keep){Object.keys(cards).forEach(function(k){URL.revokeObjectURL(cards[k].url)});cards={};if(!keep)curFmt=(window.matchMedia&&window.matchMedia('(max-width:991px)').matches)?'sq':'li';loadSrc(function(){Object.keys(FORMATS).forEach(function(f){paint(f,t)})})}
   function cardFile(f){var c=cards[f];if(!c)return null;try{return new File([c.png],fileName(),{type:'image/png'})}catch(e){return null}}
   function openShare(t){shareT=t;var tx=shareText(),e=encodeURIComponent;$('shareTime').textContent=fmt(t);$('shareLbl').textContent=(st.best&&t===st.best)?'Your best lap':'Your lap';$('shareImg').hidden=true;$('shSave').hidden=true;$('shHint').textContent=HINT0;
     $('shX').href='https://twitter.com/intent/tweet?text='+e(shareText('x'))+'&url='+e(SHARE_URL);$('shLi').href='https://www.linkedin.com/feed/?shareActive=true&text='+e(tx+' '+SHARE_URL);
@@ -386,6 +405,7 @@ function init(model){
       if(igPlain||!(navigator.clipboard&&navigator.clipboard.writeText)){go(false);$('shHint').textContent='Choose Instagram, then Story. Paste or type '+TAGS+' with the Aa tool to tag us.';return}
       $('shHint').textContent='Tags copied. Choose Instagram, then Story, and paste them with the Aa tool.';navigator.clipboard.writeText(TAGS).then(function(){go(true)},function(){go(false)});return}
     if(cards.ig){var a=document.createElement('a');a.href=cards.ig.url;a.download=fileName();document.body.appendChild(a);a.click();a.remove()}$('shHint').textContent='Story image saved. Add it to your story in Instagram.'});
+  var whoT=0;window.__amWho=function(){clearTimeout(whoT);whoT=setTimeout(function(){if(paused&&!$('share').hidden&&shareT)makeCards(shareT,true)},350)};
   $('cta').addEventListener('click',function(){want={t:st.best};exitGame()});
   var paused=false,ui=[$('hud'),$('padL'),$('padR'),$('map'),msg];$('best').textContent=st.best>0?fmt(st.best):'-';
   function exitGame(){if(paused)return;paused=true;key.gas=key.brake=key.left=key.right=key.hand=0;ui.forEach(function(el){el.hidden=true});renderer.domElement.style.visibility='hidden';startBtn.disabled=false;startBtn.textContent='Resume driving';bar.hidden=true;$('cta').hidden=true;var w=want||(st.best>0?{t:st.best}:null);want=null;if(w)openShare(w.t);else{$('share').hidden=true;$('cover').classList.remove('sharing')}$('cover').hidden=false}
