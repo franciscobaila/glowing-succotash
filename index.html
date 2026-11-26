@@ -29,6 +29,7 @@ button.start:disabled{opacity:.7;cursor:default}
 .share img{display:block;width:auto;height:auto;max-width:min(58%,440px);max-height:min(46vh,300px);border-radius:10px;border:1px solid #ffffff40;box-shadow:0 10px 34px #000b}
 .cover.sharing::before{content:"";position:absolute;inset:0;background:#0b0a1cc4}.cover.sharing>*{position:relative}.cover.sharing{justify-content:center;padding-bottom:20px}
 .pill.pri{background:#883ae1;border-color:#883ae1}
+.share .tagcta{font-size:14px;font-weight:500;margin-top:-3px}.share .tagcta b{color:#e9b8ff;font-weight:700}
 .share .hint{font-size:12.5px;color:#ffffffd9;min-height:1.3em;max-width:44ch}
 .cta{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font:inherit;font-size:14px;font-weight:650;color:#fff;background:#883ae1;border:0;border-radius:999px;padding:9px 17px;cursor:pointer;box-shadow:0 4px 16px #0006;white-space:nowrap}
 .cta b{font-variant-numeric:tabular-nums;margin-left:5px}.cta:hover{background:#9a4ff0}
@@ -79,6 +80,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
       <div class="share" id="share" hidden>
         <img id="shareImg" alt="The car with your lap time">
         <div class="bl"><span id="shareLbl">Your best lap</span> <b id="shareTime"></b></div>
+        <div class="tagcta">Share it with <b>#antimatterGT3</b> and tag <b>@antimattergroup</b></div>
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
         <div class="hint" id="shHint"></div>
       </div>
@@ -341,8 +343,7 @@ function init(model){
     var top=story?250:pad*0.9,by=H-(story?300:pad);
     if(logoImg.complete&&logoImg.naturalWidth){var lw=W*(tall?0.4:0.27);g.drawImage(logoImg,pad,top,lw,lw*logoImg.naturalHeight/logoImg.naturalWidth)}
     g.fillStyle='#fff';g.textBaseline='alphabetic';var ts=Math.round(W*(story?0.19:tall?0.168:0.094)),ss=Math.round(W*(tall?0.036:0.025));
-    if(story){g.font='600 '+ss+'px '+FONT;g.fillStyle='#e9b8ff';g.fillText('#antimatterGT3',pad,by);g.textAlign='right';g.fillText('@antimattergroup',W-pad,by);g.textAlign='left';by-=Math.round(ss*1.7);g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';g.fillText('Think you can beat it?',pad,by);by-=Math.round(ss*2.1)}
-    else if(tall){g.font='600 '+ss+'px '+FONT;g.fillText('Think you can beat it?',pad,by);g.fillStyle='#e9b8ff';g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*2.1)}
+    if(tall){g.font='600 '+ss+'px '+FONT;g.fillText('Think you can beat it?',pad,by);g.fillStyle='#e9b8ff';g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*2.1)}
     g.font='800 '+ts+'px '+FONT;g.fillText(fmt(t),pad-ts*0.04,by);g.font='700 '+Math.round(ss*0.9)+'px '+FONT;g.fillText('LAP TIME',pad,by-ts*0.9);
     if(!tall){g.font='600 '+ss+'px '+FONT;g.textAlign='right';g.fillText('Think you can beat it?',W-pad,by-ss*1.4);g.fillStyle='#e9b8ff';g.fillText('antimatter.com',W-pad,by)}
     c.toBlob(function(bp){if(!bp||t!==shareT)return;cards[f]={png:bp,url:URL.createObjectURL(bp)};if(f===curFmt)setFmt(f)},'image/png')}catch(e){}}
@@ -359,7 +360,7 @@ function init(model){
   $('shCopy').addEventListener('click',function(){var b=$('shCopy'),t=shareText()+' '+SHARE_URL,ok=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy text'},1600)};
     function old(){try{var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok()}catch(e){}}
     try{navigator.clipboard.writeText(t).then(ok,old)}catch(e){old()}});
-  var HINT0='Pick a network. The image switches to its format and is copied, ready to paste into your post.';
+  var HINT0='Pick a network to get the image in its format.';
   var noSheet=false;
   [['shX','x','X'],['shLi','li','LinkedIn']].forEach(function(p){$(p[0]).addEventListener('click',function(ev){setFmt(p[1]);
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
