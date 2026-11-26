@@ -364,7 +364,7 @@ function init(model){
   [['shX','x','X'],['shLi','li','LinkedIn']].forEach(function(p){$(p[0]).addEventListener('click',function(ev){setFmt(p[1]);
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
     var fl=cardFile(p[1]);if(!noSheet&&window.matchMedia&&window.matchMedia('(pointer:coarse)').matches&&canFiles(fl)){ev.preventDefault();$('shHint').textContent='Choose '+p[2]+' in the list.';
-      try{navigator.share({files:[fl],text:shareText(p[1])+' '+SHARE_URL}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
+      try{navigator.share({files:[fl],text:shareText(p[1])+' antimatter.com'}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
     // desktop: copy the picture first and only then open the post, because the copy fails once this tab is no longer the one in front
     var c=cards[p[1]],href=this.href,OKT=p[1]==='li'?'Image copied. Paste it into the post (Cmd+V or Ctrl+V). To tag us, type @antimattergroup and pick Antimatter from the list.':'Image copied. Paste it into the post (Cmd+V or Ctrl+V).',NOT='The image could not be copied here. Use Save image, then add it to your post.';
     if(!(c&&navigator.clipboard&&window.ClipboardItem)){$('shHint').textContent=NOT;return}
@@ -373,9 +373,9 @@ function init(model){
     if(safari){wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT});return}     // Safari will not open a tab after a wait, so it opens straight away
     ev.preventDefault();wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT}).then(function(){var w=window.open(href,'_blank','noopener');if(!w&&w!==null)location.href=href})})});
   $('shIg').addEventListener('click',function(){setFmt('ig');var fl=cardFile('ig'),touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;     // Instagram has no share link: the story image goes through the phone's share sheet, or is saved
-    if(touch&&canFiles(fl)){try{navigator.share({files:[fl]}).catch(function(){})}catch(e){}$('shHint').textContent='Choose Instagram, then Story. To make them tappable, add @antimattergroup and #antimatterGT3 with the Aa text tool.';return}
+    if(touch&&canFiles(fl)){try{navigator.share({files:[fl]}).catch(function(){})}catch(e){}$('shHint').textContent='Choose Instagram, then Story. To tag us, type @antimattergroup and #antimatterGT3 with the Aa tool.';return}
     if(cards.ig){var a=document.createElement('a');a.href=cards.ig.url;a.download=fileName();document.body.appendChild(a);a.click();a.remove()}$('shHint').textContent='Story image saved. Add it to your story in Instagram.'});
-  $('cta').addEventListener('click',function(){want={t:lastLap};exitGame()});
+  $('cta').addEventListener('click',function(){want={t:st.best};exitGame()});
   var paused=false,ui=[$('hud'),$('padL'),$('padR'),$('map'),msg];$('best').textContent=st.best>0?fmt(st.best):'-';
   function exitGame(){if(paused)return;paused=true;key.gas=key.brake=key.left=key.right=key.hand=0;ui.forEach(function(el){el.hidden=true});renderer.domElement.style.visibility='hidden';startBtn.disabled=false;startBtn.textContent='Resume driving';bar.hidden=true;$('cta').hidden=true;var w=want||(st.best>0?{t:st.best}:null);want=null;if(w)openShare(w.t);else{$('share').hidden=true;$('cover').classList.remove('sharing')}$('cover').hidden=false}
   window.__amResume=function(){if(!paused)return;paused=false;$('cover').hidden=true;ui.forEach(function(el){el.hidden=false});$('cta').hidden=!(lastLap>0);renderer.domElement.style.visibility='';last=performance.now();requestAnimationFrame(frame)};
@@ -438,7 +438,7 @@ function init(model){
     if(msgT>0){msgT-=dt;if(msgT<=0)msg.style.opacity=0}
     drawMap();
     renderer.render(scene,cam);
-    if(snapWanted){snapWanted=0;$('ctaT').textContent=fmt(lastLap);$('cta').hidden=false}
+    if(snapWanted){snapWanted=0;$('ctaT').textContent=fmt(st.best);$('cta').hidden=false}
     requestAnimationFrame(frame)}
   window.__drive={setFmt:setFmt,fmt:fmt,P:P,Tn:Tn,S0:S0,place:place,step:step,restart:restart,skids:skids,isPaused:function(){return paused},st:st,key:key,N:N,hasModel:!!model,car:car,wheels:wheels};
   requestAnimationFrame(frame);
