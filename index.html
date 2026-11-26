@@ -363,7 +363,10 @@ function init(model){
   var noSheet=false;
   [['shX','x','X'],['shLi','li','LinkedIn']].forEach(function(p){$(p[0]).addEventListener('click',function(ev){setFmt(p[1]);
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
-    var fl=cardFile(p[1]);if(!noSheet&&window.matchMedia&&window.matchMedia('(pointer:coarse)').matches&&canFiles(fl)){ev.preventDefault();$('shHint').textContent='Choose '+p[2]+' in the list.';
+    var phone=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+    if(phone&&p[1]==='li'){     // LinkedIn on a phone: open LinkedIn itself with the text and the link. Its app drops a shared picture as soon as there is text, so the share sheet is not used
+      ev.preventDefault();$('shHint').textContent='LinkedIn opens with your time and the link.';var w=null;try{w=window.open(this.href,'_blank')}catch(e){}if(!w){try{window.open(this.href,'_top')}catch(e){location.href=this.href}}return}
+    var fl=cardFile(p[1]);if(!noSheet&&phone&&canFiles(fl)){ev.preventDefault();$('shHint').textContent='Choose '+p[2]+' in the list.';
       try{navigator.share({files:[fl],text:shareText(p[1])+' antimatter.com'}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
     // desktop: copy the picture first and only then open the post, because the copy fails once this tab is no longer the one in front
     var c=cards[p[1]],href=this.href,OKT=p[1]==='li'?'Image copied. Paste it into the post (Cmd+V or Ctrl+V). To tag us, type @antimattergroup and pick Antimatter from the list.':'Image copied. Paste it into the post (Cmd+V or Ctrl+V).',NOT='The image could not be copied here. Use Save image, then add it to your post.';
@@ -375,8 +378,12 @@ function init(model){
     try{wr=navigator.clipboard.write([new ClipboardItem({'image/png':c.png})])}catch(e){$('shHint').textContent=NOT;return}
     if(safari){wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT});return}     // Safari will not open a tab after a wait, so it opens straight away
     ev.preventDefault();wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT}).then(function(){var w=window.open(href,'_blank','noopener');if(!w&&w!==null)location.href=href})})});
+  var igPlain=false;
   $('shIg').addEventListener('click',function(){setFmt('ig');var fl=cardFile('ig'),touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;     // Instagram has no share link: the story image goes through the phone's share sheet, or is saved
-    if(touch&&canFiles(fl)){try{navigator.share({files:[fl]}).catch(function(){})}catch(e){}$('shHint').textContent='Choose Instagram, then Story. To tag us, type @antimattergroup and #antimatterGT3 with the Aa tool.';return}
+    if(touch&&canFiles(fl)){     // copy the tags first, then open the share sheet. If the phone refuses the sheet after the copy, the next tap opens it without copying
+      var TAGS='@antimattergroup #antimatterGT3',go=function(copied){try{navigator.share({files:[fl]}).catch(function(err){if(err&&err.name!=='AbortError'&&copied){igPlain=true;$('shHint').textContent='Tags copied. Tap Instagram again to open it.'}})}catch(e){igPlain=true}};
+      if(igPlain||!(navigator.clipboard&&navigator.clipboard.writeText)){go(false);$('shHint').textContent='Choose Instagram, then Story. Paste or type '+TAGS+' with the Aa tool to tag us.';return}
+      $('shHint').textContent='Tags copied. Choose Instagram, then Story, and paste them with the Aa tool.';navigator.clipboard.writeText(TAGS).then(function(){go(true)},function(){go(false)});return}
     if(cards.ig){var a=document.createElement('a');a.href=cards.ig.url;a.download=fileName();document.body.appendChild(a);a.click();a.remove()}$('shHint').textContent='Story image saved. Add it to your story in Instagram.'});
   $('cta').addEventListener('click',function(){want={t:st.best};exitGame()});
   var paused=false,ui=[$('hud'),$('padL'),$('padR'),$('map'),msg];$('best').textContent=st.best>0?fmt(st.best):'-';
