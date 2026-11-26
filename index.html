@@ -341,7 +341,7 @@ function init(model){
     var top=story?250:pad*0.9,by=H-(story?300:pad);
     if(logoImg.complete&&logoImg.naturalWidth){var lw=W*(tall?0.4:0.27);g.drawImage(logoImg,pad,top,lw,lw*logoImg.naturalHeight/logoImg.naturalWidth)}
     g.fillStyle='#fff';g.textBaseline='alphabetic';var ts=Math.round(W*(story?0.19:tall?0.168:0.094)),ss=Math.round(W*(tall?0.036:0.025));
-    if(story){g.font='600 '+ss+'px '+FONT;g.fillStyle='#e9b8ff';g.fillText('#antimatterGT3',pad,by);g.textAlign='right';g.fillText('@antimattergroup',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*1.7);g.fillText('Think you can beat it?',pad,by);by-=Math.round(ss*2.1)}
+    if(story){g.font='600 '+ss+'px '+FONT;g.fillStyle='#e9b8ff';g.fillText('#antimatterGT3',pad,by);g.textAlign='right';g.fillText('@antimattergroup',W-pad,by);g.textAlign='left';by-=Math.round(ss*1.7);g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';g.fillText('Think you can beat it?',pad,by);by-=Math.round(ss*2.1)}
     else if(tall){g.font='600 '+ss+'px '+FONT;g.fillText('Think you can beat it?',pad,by);g.fillStyle='#e9b8ff';g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*2.1)}
     g.font='800 '+ts+'px '+FONT;g.fillText(fmt(t),pad-ts*0.04,by);g.font='700 '+Math.round(ss*0.9)+'px '+FONT;g.fillText('LAP TIME',pad,by-ts*0.9);
     if(!tall){g.font='600 '+ss+'px '+FONT;g.textAlign='right';g.fillText('Think you can beat it?',W-pad,by-ss*1.4);g.fillStyle='#e9b8ff';g.fillText('antimatter.com',W-pad,by)}
@@ -365,9 +365,15 @@ function init(model){
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
     var fl=cardFile(p[1]);if(!noSheet&&window.matchMedia&&window.matchMedia('(pointer:coarse)').matches&&canFiles(fl)){ev.preventDefault();$('shHint').textContent='Choose '+p[2]+' in the list.';
       try{navigator.share({files:[fl],text:shareText(p[1])+' '+SHARE_URL}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
-    try{var c=cards[p[1]];if(c&&navigator.clipboard&&window.ClipboardItem)navigator.clipboard.write([new ClipboardItem({'image/png':c.png})]).then(function(){$('shHint').textContent=p[1]==='li'?'Image copied. Paste it into the post (Cmd+V or Ctrl+V). To tag us, type @antimattergroup and pick Antimatter from the list.':'Image copied. Paste it into the post (Cmd+V or Ctrl+V).'},function(){$('shHint').textContent='Use Save image, then add it to your post.'});else $('shHint').textContent='Use Save image, then add it to your post.'}catch(e){}})});
+    // desktop: copy the picture first and only then open the post, because the copy fails once this tab is no longer the one in front
+    var c=cards[p[1]],href=this.href,OKT=p[1]==='li'?'Image copied. Paste it into the post (Cmd+V or Ctrl+V). To tag us, type @antimattergroup and pick Antimatter from the list.':'Image copied. Paste it into the post (Cmd+V or Ctrl+V).',NOT='The image could not be copied here. Use Save image, then add it to your post.';
+    if(!(c&&navigator.clipboard&&window.ClipboardItem)){$('shHint').textContent=NOT;return}
+    var safari=/^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent),wr;
+    try{wr=navigator.clipboard.write([new ClipboardItem({'image/png':c.png})])}catch(e){$('shHint').textContent=NOT;return}
+    if(safari){wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT});return}     // Safari will not open a tab after a wait, so it opens straight away
+    ev.preventDefault();wr.then(function(){$('shHint').textContent=OKT},function(){$('shHint').textContent=NOT}).then(function(){var w=window.open(href,'_blank','noopener');if(!w&&w!==null)location.href=href})})});
   $('shIg').addEventListener('click',function(){setFmt('ig');var fl=cardFile('ig'),touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;     // Instagram has no share link: the story image goes through the phone's share sheet, or is saved
-    if(touch&&canFiles(fl)){try{navigator.share({files:[fl]}).catch(function(){})}catch(e){}$('shHint').textContent='Choose Instagram, then Story.';return}
+    if(touch&&canFiles(fl)){try{navigator.share({files:[fl]}).catch(function(){})}catch(e){}$('shHint').textContent='Choose Instagram, then Story. To make them tappable, add @antimattergroup and #antimatterGT3 with the Aa text tool.';return}
     if(cards.ig){var a=document.createElement('a');a.href=cards.ig.url;a.download=fileName();document.body.appendChild(a);a.click();a.remove()}$('shHint').textContent='Story image saved. Add it to your story in Instagram.'});
   $('cta').addEventListener('click',function(){want={t:lastLap};exitGame()});
   var paused=false,ui=[$('hud'),$('padL'),$('padR'),$('map'),msg];$('best').textContent=st.best>0?fmt(st.best):'-';
