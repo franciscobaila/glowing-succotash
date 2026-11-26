@@ -367,6 +367,9 @@ function init(model){
       try{navigator.share({files:[fl],text:shareText(p[1])+' antimatter.com'}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
     // desktop: copy the picture first and only then open the post, because the copy fails once this tab is no longer the one in front
     var c=cards[p[1]],href=this.href,OKT=p[1]==='li'?'Image copied. Paste it into the post (Cmd+V or Ctrl+V). To tag us, type @antimattergroup and pick Antimatter from the list.':'Image copied. Paste it into the post (Cmd+V or Ctrl+V).',NOT='The image could not be copied here. Use Save image, then add it to your post.';
+    if(p[1]==='li'){     // LinkedIn does not accept a pasted image, so the image is saved and the post opens: the player adds it with LinkedIn's photo button
+      if(c){var dl=document.createElement('a');dl.href=c.url;dl.download=fileName();document.body.appendChild(dl);dl.click();dl.remove()}
+      $('shHint').textContent='Image saved to your downloads. In the LinkedIn post, use the photo button to add it. To tag us, type @antimattergroup and pick Antimatter.';return}
     if(!(c&&navigator.clipboard&&window.ClipboardItem)){$('shHint').textContent=NOT;return}
     var safari=/^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent),wr;
     try{wr=navigator.clipboard.write([new ClipboardItem({'image/png':c.png})])}catch(e){$('shHint').textContent=NOT;return}
