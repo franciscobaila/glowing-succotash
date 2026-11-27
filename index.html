@@ -29,6 +29,7 @@ button.start:disabled{opacity:.7;cursor:default}
 .who input,.who select{font:inherit;font-size:18px;font-weight:600;line-height:1.2;color:#fff;background:#0b0a1cb3;border:1.5px solid #ffffffa6;border-radius:999px;padding:14px 22px;width:270px;outline:none;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
 .who select{padding-right:44px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#fff 50%),linear-gradient(135deg,#fff 50%,transparent 50%);background-position:calc(100% - 25px) 55%,calc(100% - 18px) 55%;background-size:7px 7px;background-repeat:no-repeat}
 .who select option{color:#15143a;background:#fff}
+.who .whoT{display:flex;align-items:center;gap:12px;margin-left:20px}.who .whoT span{font-size:18px;font-weight:600;color:#fff;white-space:nowrap;text-shadow:0 1px 10px #0b0a1c,0 0 3px #0b0a1c}
 .who input::placeholder{color:#ffffffa6}.who input:focus,.who select:focus{border-color:#b98cff;box-shadow:0 0 0 3px #883ae166}
 .share{display:flex;flex-direction:column;align-items:center;gap:9px;color:#fff;text-shadow:0 1px 4px #000c}
 .share img{display:block;width:auto;height:auto;max-width:min(58%,440px);max-height:min(46vh,300px);border-radius:10px;border:1px solid #ffffff40;box-shadow:0 10px 34px #000b}
@@ -59,7 +60,7 @@ button.start:disabled{opacity:.7;cursor:default}
   .pad{display:flex;gap:7px;bottom:10px}.pad.l{left:10px}.pad.r{right:10px}
   .pad{align-items:flex-end}.pad button{width:46px;height:46px;font-size:17px}.pad.l{gap:10px}.pad.l button{width:68px;height:68px;font-size:27px}.pad button#rst,.pad button#ext{font-size:10px!important}
   .keys{display:none!important}
-  .cta{bottom:90px;font-size:13px;padding:8px 14px}.share img{max-width:62%;max-height:min(30vh,170px)}.who{width:100%;max-width:320px}.who input,.who select{width:100%;font-size:17px;padding:12px 20px}.share .tagcta{font-size:15.5px}.share{gap:15px}.share .row{gap:8px}.share .tagcta{line-height:1.38}.share .hint{margin-top:-4px}.pill{font-size:12.5px;padding:7px 13px}.cover.sharing{gap:18px;padding:12px}.cover.sharing .start{padding:11px 24px}
+  .cta{bottom:90px;font-size:13px;padding:8px 14px}.share img{max-width:62%;max-height:min(30vh,170px)}.who{width:100%;max-width:320px}.who input,.who select{width:100%;font-size:17px;padding:12px 20px}.who .whoT{width:100%;margin-left:0}.who .whoT span{font-size:17px}.who .whoT select{flex:1;min-width:0;width:auto}.share .tagcta{font-size:15.5px}.share{gap:15px}.share .row{gap:8px}.share .tagcta{line-height:1.38}.share .hint{margin-top:-4px}.pill{font-size:12.5px;padding:7px 13px}.cover.sharing{gap:18px;padding:12px}.cover.sharing .start{padding:11px 24px}
   .stage{aspect-ratio:3/4;max-height:88vh}
   .stage canvas.map{width:84px;height:84px}
   .hud{gap:10px;left:10px;top:9px;flex-wrap:wrap;max-width:calc(100% - 110px)}.hud b{font-size:16px}.hud small{font-size:9px}
@@ -91,7 +92,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
-        <select id="whoTeam" aria-label="Your team"><option value="0">Team Antimatter</option><option value="2">Team GA Invest</option><option value="3">Team Policloud</option><option value="4">Team Hivenet</option><option value="5">Team Elevatus</option><option value="6">Team global.ventures</option><option value="7">Team Shadeform</option></select>
+        <label class="whoT"><span>Play as</span><select id="whoTeam" aria-label="Play as"><option value="0">Team Antimatter</option><option value="2">Team GA Invest</option><option value="3">Team Policloud</option><option value="4">Team Hivenet</option><option value="5">Team Elevatus</option><option value="6">Team global.ventures</option><option value="7">Team Shadeform</option></select></label>
       </div>
       <button class="start" id="start">Start driving</button>
       <div class="bar" id="bar" hidden><i></i></div>
