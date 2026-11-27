@@ -92,7 +92,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
-        <label class="whoT"><span>Play as</span><select id="whoTeam" aria-label="Play as"><option value="0">Team Antimatter</option><option value="2">Team GA Invest</option><option value="3">Team Policloud</option><option value="4">Team Hivenet</option><option value="5">Team Elevatus</option><option value="6">Team global.ventures</option><option value="7">Team Shadeform</option></select></label>
+        <label class="whoT"><span>Play as</span><select id="whoTeam" aria-label="Play as"><option value="0">Team Antimatter</option><option value="2">Sponsor GA Invest</option><option value="3">Sponsor Policloud</option><option value="4">Sponsor Hivenet</option><option value="5">Sponsor Elevatus</option><option value="6">Sponsor global.ventures</option><option value="7">Sponsor Shadeform</option></select></label>
       </div>
       <button class="start" id="start">Start driving</button>
       <div class="bar" id="bar" hidden><i></i></div>
@@ -363,7 +363,7 @@ function init(model){
     if(!(who.team>0)){g.fillStyle='#e9b8ff';g.font='700 '+Math.round(lgh*0.4)+'px '+FONT;g.textAlign='left';g.textBaseline='middle';g.fillText('RACING TEAM',pad+lw+lgh*0.3,top+lgh*0.56);g.textBaseline='alphabetic';g.fillStyle='#fff'}     // team antimatter: the word TEAM beside the antimatter logo
     if(who.team>0&&atlasImg.complete&&atlasImg.naturalWidth){     // the chosen team: its logo on a dark plate, top right
       var cw=W*(tall?0.36:0.24),chh=cw*114/840,cx=W-pad-cw,cy=top+(lgh-chh)/2,rr=chh*0.28,px=cw*0.03;g.save();g.beginPath();g.moveTo(cx-px+rr,cy-px);g.arcTo(cx+cw+px,cy-px,cx+cw+px,cy+chh+px,rr);g.arcTo(cx+cw+px,cy+chh+px,cx-px,cy+chh+px,rr);g.arcTo(cx-px,cy+chh+px,cx-px,cy-px,rr);g.arcTo(cx-px,cy-px,cx+cw+px,cy-px,rr);g.closePath();g.fillStyle='#1b1a3a';g.fill();g.clip();
-      g.drawImage(atlasImg,92,who.team*CELL_H+16,840,114,cx,cy,cw,chh);g.restore();g.fillStyle='#e9b8ff';g.font='700 '+Math.round(W*(tall?0.022:0.015))+'px '+FONT;g.textAlign='left';g.textBaseline='alphabetic';g.fillText('TEAM',cx-px,cy-px-W*0.008);g.fillStyle='#fff'}
+      g.drawImage(atlasImg,92,who.team*CELL_H+16,840,114,cx,cy,cw,chh);g.restore();g.fillStyle='#e9b8ff';g.font='700 '+Math.round(W*(tall?0.022:0.015))+'px '+FONT;g.textAlign='center';g.textBaseline='alphabetic';g.fillText('PLAYING FOR',cx+cw/2,cy-px-W*0.008);g.textAlign='left';g.fillStyle='#fff'}
     g.fillStyle='#fff';g.textBaseline='alphabetic';var ts=Math.round(W*(story?0.19:tall?0.168:0.094)),ss=Math.round(W*(tall?0.036:0.025));
     if(tall){g.font='600 '+ss+'px '+FONT;g.fillText('Think you can beat it?',pad,by);g.fillStyle='#e9b8ff';g.textAlign='right';g.fillText('antimatter.com',W-pad,by);g.textAlign='left';g.fillStyle='#fff';by-=Math.round(ss*2.1)}
     g.font='800 '+ts+'px '+FONT;g.fillText(fmt(t),pad-ts*0.04,by);g.font='700 '+Math.round(ss*0.9)+'px '+FONT;g.fillText('LAP TIME',pad,by-ts*0.9);var nm=who.name.trim();if(nm){g.font='700 '+Math.round(ss*1.45)+'px '+FONT;g.fillStyle='#e9b8ff';g.shadowColor='rgba(11,10,28,0.9)';g.shadowBlur=ss*0.6;g.fillText(nm,pad,by-ts*0.9-ss*1.35);g.fillText(nm,pad,by-ts*0.9-ss*1.35);g.shadowBlur=0;g.shadowColor='transparent';g.fillStyle='#fff'}     // the username sits on its own line above the label
