@@ -88,7 +88,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
         <div class="bl"><span id="shareLbl">Your best lap</span> <b id="shareTime"></b></div>
         <div class="tagcta">Enter the leaderboard: share your lap with <b>#antimatterGT3</b> and tag <b>@antimattergroup</b></div>
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
-        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 81</div>
+        <div class="hint" id="shHint"></div><!-- build 82 -->
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
@@ -118,7 +118,7 @@ var LIBS=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','h
 var CAR_URL='car.json',LIVERY_URL='livery.jpg',LOGO_URL='logo.png';
 var $=function(id){return document.getElementById(id)};
 var SPONSORS={0:'Antimatter',2:'GA Invest',3:'Policloud',4:'Hivenet',5:'Elevatus',6:'global.ventures',7:'Shadeform'},lapSent=false;
-function track(n,d){try{d=d||{};d.sponsor=SPONSORS[(typeof who==='object'&&who&&who.team)||0]||'Antimatter';if(window.parent&&window.parent!==window)window.parent.postMessage({source:'am-drive',event:n,data:d},'*')}catch(e){}}
+function track(n,d){try{d=d||{};d.sponsor=SPONSORS[(typeof who==='object'&&who&&who.team)||0]||'Antimatter';var un=(typeof who==='object'&&who&&who.name||'').trim();if(un)d.username=un;if(window.parent&&window.parent!==window)window.parent.postMessage({source:'am-drive',event:n,data:d},'*')}catch(e){}}
 var stage=$('stage'),startBtn=$('start'),bar=$('bar'),fill=bar.firstElementChild;
 // the driver's name and team: chosen on the cover, kept on this device, shown on the share image
 var who={name:'',team:0},WHO_KEY='am-drive-who';
@@ -391,7 +391,7 @@ function init(model){
   $('shCopy').addEventListener('click',function(){var b=$('shCopy'),t=shareText()+' '+SHARE_URL,ok=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy text'},1600)};
     function old(){try{var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok()}catch(e){}}
     try{navigator.clipboard.writeText(t).then(ok,old)}catch(e){old()}});
-  [['shX','x'],['shLi','linkedin'],['shIg','instagram'],['shSave','save_image'],['shCopy','copy_text'],['shNative','share_sheet']].forEach(function(p){$(p[0]).addEventListener('click',function(){track('share_click',{network:p[1]})})});
+  [['shX','x'],['shLi','linkedin'],['shIg','instagram'],['shSave','save_image'],['shCopy','copy_text'],['shNative','share_sheet']].forEach(function(p){$(p[0]).addEventListener('click',function(){var d={network:p[1]};if(shareT)d.best_seconds=Math.round(shareT*1000)/1000;track('share_click',d)})});
   var HINT0='Pick a network to get the image in its format.';
   var noSheet=false,liTop=false;
   [['shX','x','X'],['shLi','li','LinkedIn']].forEach(function(p){$(p[0]).addEventListener('click',function(ev){setFmt(p[1]);
