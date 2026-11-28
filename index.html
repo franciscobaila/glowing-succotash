@@ -88,7 +88,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
         <div class="bl"><span id="shareLbl">Your best lap</span> <b id="shareTime"></b></div>
         <div class="tagcta">Enter the leaderboard: share your lap with <b>#antimatterGT3</b> and tag <b>@antimattergroup</b></div>
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
-        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 80</div>
+        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 81</div>
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
@@ -112,15 +112,13 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
   <div class="keys"><span><kbd>W</kbd> or <kbd>&uarr;</kbd> accelerate</span><span><kbd>S</kbd> or <kbd>&darr;</kbd> brake and reverse</span><span><kbd>A</kbd> <kbd>D</kbd> or <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> back on track</span><span><kbd>Enter</kbd> restart from the grid</span><span><kbd>Esc</kbd> exit</span></div>
 </div>
 
-<script>window.sa_event=window.sa_event||function(){var a=[].slice.call(arguments);window.sa_event.q?window.sa_event.q.push(a):window.sa_event.q=[a]};</script>
-<script async data-hostname="antimatter.com" data-auto-collect="false" src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 <script>
 (function(){
 var LIBS=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js'];
 var CAR_URL='car.json',LIVERY_URL='livery.jpg',LOGO_URL='logo.png';
 var $=function(id){return document.getElementById(id)};
 var SPONSORS={0:'Antimatter',2:'GA Invest',3:'Policloud',4:'Hivenet',5:'Elevatus',6:'global.ventures',7:'Shadeform'},lapSent=false;
-function track(n,d){try{d=d||{};d.sponsor=SPONSORS[(typeof who==='object'&&who&&who.team)||0]||'Antimatter';if(window.sa_event)window.sa_event(n,d)}catch(e){}}
+function track(n,d){try{d=d||{};d.sponsor=SPONSORS[(typeof who==='object'&&who&&who.team)||0]||'Antimatter';if(window.parent&&window.parent!==window)window.parent.postMessage({source:'am-drive',event:n,data:d},'*')}catch(e){}}
 var stage=$('stage'),startBtn=$('start'),bar=$('bar'),fill=bar.firstElementChild;
 // the driver's name and team: chosen on the cover, kept on this device, shown on the share image
 var who={name:'',team:0},WHO_KEY='am-drive-who';
