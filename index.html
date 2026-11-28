@@ -88,7 +88,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
         <div class="bl"><span id="shareLbl">Your best lap</span> <b id="shareTime"></b></div>
         <div class="tagcta">Enter the leaderboard: share your lap with <b>#antimatterGT3</b> and tag <b>@antimattergroup</b></div>
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
-        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 79</div>
+        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 80</div>
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
@@ -112,11 +112,15 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
   <div class="keys"><span><kbd>W</kbd> or <kbd>&uarr;</kbd> accelerate</span><span><kbd>S</kbd> or <kbd>&darr;</kbd> brake and reverse</span><span><kbd>A</kbd> <kbd>D</kbd> or <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> back on track</span><span><kbd>Enter</kbd> restart from the grid</span><span><kbd>Esc</kbd> exit</span></div>
 </div>
 
+<script>window.sa_event=window.sa_event||function(){var a=[].slice.call(arguments);window.sa_event.q?window.sa_event.q.push(a):window.sa_event.q=[a]};</script>
+<script async data-hostname="antimatter.com" data-auto-collect="false" src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 <script>
 (function(){
 var LIBS=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js'];
 var CAR_URL='car.json',LIVERY_URL='livery.jpg',LOGO_URL='logo.png';
 var $=function(id){return document.getElementById(id)};
+var SPONSORS={0:'Antimatter',2:'GA Invest',3:'Policloud',4:'Hivenet',5:'Elevatus',6:'global.ventures',7:'Shadeform'},lapSent=false;
+function track(n,d){try{d=d||{};d.sponsor=SPONSORS[(typeof who==='object'&&who&&who.team)||0]||'Antimatter';if(window.sa_event)window.sa_event(n,d)}catch(e){}}
 var stage=$('stage'),startBtn=$('start'),bar=$('bar'),fill=bar.firstElementChild;
 // the driver's name and team: chosen on the cover, kept on this device, shown on the share image
 var who={name:'',team:0},WHO_KEY='am-drive-who';
@@ -127,6 +131,7 @@ $('whoName').addEventListener('input',whoChanged);$('whoTeam').addEventListener(
 $('whoName').addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter'){e.preventDefault();$('whoName').blur();startBtn.click()}});
 function loadScript(src){return new Promise(function(ok,no){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 startBtn.addEventListener('click',function(){
+  track('game_start',{replay:!!window.__amResume});
   if(window.__amResume){window.__amResume();return}
   startBtn.disabled=true;startBtn.textContent='Loading';bar.hidden=false;fill.style.width='10%';
   loadScript(LIBS[0]).then(function(){fill.style.width='25%';return loadScript(LIBS[1]).catch(function(){})}).then(function(){
@@ -388,6 +393,7 @@ function init(model){
   $('shCopy').addEventListener('click',function(){var b=$('shCopy'),t=shareText()+' '+SHARE_URL,ok=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy text'},1600)};
     function old(){try{var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok()}catch(e){}}
     try{navigator.clipboard.writeText(t).then(ok,old)}catch(e){old()}});
+  [['shX','x'],['shLi','linkedin'],['shIg','instagram'],['shSave','save_image'],['shCopy','copy_text'],['shNative','share_sheet']].forEach(function(p){$(p[0]).addEventListener('click',function(){track('share_click',{network:p[1]})})});
   var HINT0='Pick a network to get the image in its format.';
   var noSheet=false,liTop=false;
   [['shX','x','X'],['shLi','li','LinkedIn']].forEach(function(p){$(p[0]).addEventListener('click',function(ev){setFmt(p[1]);
@@ -461,7 +467,7 @@ function init(model){
     var dI=(st.near-S0+N)%N,crossed=st.dPrev!==null&&st.dPrev<0&&dNow>=0&&(dI<20||dI>N-20);
     if(crossed){     // the exact moment the car was on the line, worked out between the two frames either side of it
       var fr=(st.dPrev!==null&&st.dPrev<0&&dNow>=0)?-st.dPrev/(dNow-st.dPrev):1,tc=Math.max(0,st.lapT-dt-(1-fr)*(st.dtPrev||0));
-      if(st.half&&tc>8){lastLap=tc;snapWanted=1;if(!st.best||tc<st.best){st.best=tc;saveBest();say('Best lap '+fmt(tc))}else say('Lap '+fmt(tc));st.lapT-=tc;st.half=false}
+      if(st.half&&tc>8){if(!lapSent){lapSent=true;track('lap_complete',{seconds:Math.round(tc*1000)/1000})}lastLap=tc;snapWanted=1;if(!st.best||tc<st.best){st.best=tc;saveBest();say('Best lap '+fmt(tc))}else say('Lap '+fmt(tc));st.lapT-=tc;st.half=false}
       else if(st.half){st.lapT-=tc;st.half=false}
       else if(st.out)st.lapT-=tc;                     // first time over the line from the grid: the clock starts here
       st.out=false}
