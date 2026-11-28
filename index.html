@@ -394,12 +394,12 @@ function init(model){
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
     var phone=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
     if(phone&&p[1]==='li'){     // LinkedIn on a phone: open LinkedIn itself with the text and the link. Its app drops a shared picture as soon as there is text, so the share sheet is not used
-      var lt=shareText()+' '+SHARE_URL,a=this,lf=cardFile('li'),can=canFiles(lf);
+      var lt=shareText()+' '+SHARE_URL,a=this,lf=1,can=!!navigator.share;
       function cp(){try{var ta=document.createElement('textarea');ta.value=lt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;font-size:16px';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,lt.length);var k=document.execCommand('copy');ta.remove();return k}catch(e){return false}}
-      if(!noSheet&&can){ev.preventDefault();var pr=null;try{pr=navigator.share({files:[lf]})}catch(e){noSheet=true;$('shHint').textContent='Share sheet failed ('+(e&&e.name)+'). Tap LinkedIn again.';return}
-        var ok=cp();$('shHint').textContent='Choose LinkedIn in the list. '+(ok?'Your text is copied: paste it into the post.':'Then use Copy text and paste it into the post.');
+      if(!noSheet&&can){ev.preventDefault();var pr=null;try{pr=navigator.share({title:'Antimatter Drive',text:shareText(),url:SHARE_URL})}catch(e){noSheet=true;$('shHint').textContent='Share sheet failed ('+(e&&e.name)+'). Tap LinkedIn again.';return}
+        var ok=cp();$('shHint').textContent='Choose LinkedIn in the list. Your post opens with the text and the link.';
         if(pr&&pr.catch)pr.catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Share sheet failed ('+err.name+'). Tap LinkedIn again to open LinkedIn directly.'}});return}
-      cp();try{navigator.clipboard.writeText(lt).catch(function(){})}catch(e){}var why=noSheet?'':(!navigator.share?' (this browser has no share sheet)':!lf?' (image not ready)':' (this browser cannot share images)');
+      cp();try{navigator.clipboard.writeText(lt).catch(function(){})}catch(e){}var why=noSheet?'':(!navigator.share?' (this browser has no share sheet)':'');
       a.href='https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(SHARE_URL);a.target=liTop?'_top':'_blank';$('shHint').textContent='Your text is copied. Paste it into the LinkedIn post.'+why;
       var gone=false,mark=function(){gone=true};window.addEventListener('blur',mark,{once:true});window.addEventListener('pagehide',mark,{once:true});document.addEventListener('visibilitychange',mark,{once:true});
       setTimeout(function(){if(!gone&&document.visibilityState==='visible'){liTop=true;$('shHint').textContent='LinkedIn did not open. Tap LinkedIn again to open it in this window. Your text is already copied.'}},1500);return}
