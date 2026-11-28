@@ -88,7 +88,7 @@ html,body{height:100%;background:transparent!important}body{padding:0!important;
         <div class="bl"><span id="shareLbl">Your best lap</span> <b id="shareTime"></b></div>
         <div class="tagcta">Enter the leaderboard: share your lap with <b>#antimatterGT3</b> and tag <b>@antimattergroup</b></div>
         <div class="row"><button class="pill pri" id="shNative" hidden>Share</button><a class="pill" id="shX" target="_blank" rel="noopener">X</a><a class="pill" id="shLi" target="_blank" rel="noopener">LinkedIn</a><button class="pill" id="shIg">Instagram</button><a class="pill" id="shSave" download="Antimatter GT3.png">Save image</a><button class="pill" id="shCopy">Copy text</button></div>
-        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 78</div>
+        <div class="hint" id="shHint"></div><div style="font-size:10px;line-height:1;color:#ffffff73;letter-spacing:.04em">build 79</div>
       </div>
       <div class="who" id="who">
         <input id="whoName" type="text" maxlength="16" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username">
@@ -394,12 +394,15 @@ function init(model){
     // on a phone the share link often lands in the app without opening a post, so the phone's own share sheet is used: it hands the app the image and the text together
     var phone=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
     if(phone&&p[1]==='li'){     // LinkedIn on a phone: open LinkedIn itself with the text and the link. Its app drops a shared picture as soon as there is text, so the share sheet is not used
-      ev.preventDefault();var lt=shareText()+' '+SHARE_URL,u='https://www.linkedin.com/feed/?shareActive=true&text='+encodeURIComponent(lt);
-      try{var ta=document.createElement('textarea');ta.value=lt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;font-size:16px';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,lt.length);document.execCommand('copy');ta.remove()}catch(e){}
-      $('shHint').textContent='LinkedIn opens in your browser with the post ready. If the text is missing, paste it: it is copied.';
-      var w=null;try{w=window.open('about:blank','_blank')}catch(e){}
-      if(w){setTimeout(function(){try{w.location.replace(u)}catch(e){try{w.location.href=u}catch(e2){}}},80)}else{try{w=window.open(u,'_blank')}catch(e){}if(!w){try{window.top.location.href=u}catch(e){location.href=u}}}
-      return}
+      var lt=shareText()+' '+SHARE_URL,a=this,lf=1,can=!!navigator.share;
+      function cp(){try{var ta=document.createElement('textarea');ta.value=lt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;font-size:16px';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,lt.length);var k=document.execCommand('copy');ta.remove();return k}catch(e){return false}}
+      if(!noSheet&&can){ev.preventDefault();var pr=null;try{pr=navigator.share({text:lt})}catch(e){noSheet=true;$('shHint').textContent='Share sheet failed ('+(e&&e.name)+'). Tap LinkedIn again.';return}
+        var ok=cp();$('shHint').textContent='Choose LinkedIn, then Share in a post. If the text is missing, paste it: it is copied.';
+        if(pr&&pr.catch)pr.catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Share sheet failed ('+err.name+'). Tap LinkedIn again to open LinkedIn directly.'}});return}
+      cp();try{navigator.clipboard.writeText(lt).catch(function(){})}catch(e){}var why=noSheet?'':(!navigator.share?' (this browser has no share sheet)':'');
+      a.href='https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(SHARE_URL);a.target=liTop?'_top':'_blank';$('shHint').textContent='Your text is copied. Paste it into the LinkedIn post.'+why;
+      var gone=false,mark=function(){gone=true};window.addEventListener('blur',mark,{once:true});window.addEventListener('pagehide',mark,{once:true});document.addEventListener('visibilitychange',mark,{once:true});
+      setTimeout(function(){if(!gone&&document.visibilityState==='visible'){liTop=true;$('shHint').textContent='LinkedIn did not open. Tap LinkedIn again to open it in this window. Your text is already copied.'}},1500);return}
     var fl=cardFile(p[1]);if(!noSheet&&phone&&canFiles(fl)){ev.preventDefault();$('shHint').textContent='Choose '+p[2]+' in the list.';
       try{navigator.share({files:[fl],text:shareText(p[1])+' antimatter.com'}).catch(function(err){if(err&&err.name!=='AbortError'){noSheet=true;$('shHint').textContent='Sharing from this page is blocked. Tap '+p[2]+' again to open it in the browser.'}})}catch(e){noSheet=true}return}     // the picture goes on the clipboard as the post opens, so it can be pasted straight in
     // desktop: copy the picture first and only then open the post, because the copy fails once this tab is no longer the one in front
