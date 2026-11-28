@@ -342,7 +342,7 @@ function init(model){
   var lastLap=0,shareT=0,snapWanted=0,want=null,FONT='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
   var X_HANDLE='antimattergroup';     // the antimatter handle, the same on X, LinkedIn and Instagram, without the @
   var TEAM_NAMES={2:'GA Invest',3:'Policloud',4:'Hivenet',5:'Elevatus',6:'global.ventures',7:'Shadeform'};     // team antimatter is left out of the text, it would repeat the name
-  function shareText(net){var tm=TEAM_NAMES[who.team];return 'I just did '+fmt(shareT)+(tm?' for Team '+tm:'')+' in the Antimatter Ferrari 296 GT3. Think you can beat it? @'+X_HANDLE+' #antimatterGT3'}
+  function shareText(net){return 'Just clocked '+fmt(shareT)+' in the Antimatter Ferrari 296 GT3. Think you can beat it?\n'+(net==='x'?'':'\n')+'While you’re chasing tenths, we’re deploying AI infrastructure 5× faster and at half the cost of hyperscalers'+(net==='x'?'':' — flexible power + modular data centers + distributed cloud software')+'.\n@'+X_HANDLE+' #antimatterGT3\nTry it yourself.'}
   // the picture for a post: the cover photo of the car with the lap time on top, made once per network in that network's own shape
   var FORMATS={x:[1600,900],li:[1200,627],sq:[1080,1080],ig:[1080,1920]},cards={},curFmt='li',srcImgs=null;
   function loadSrc(cb){if(srcImgs)return cb();var a=new Image(),b=new Image(),n=2,d=function(){if(!--n){srcImgs=[a,b];cb()}};a.onload=a.onerror=b.onload=b.onerror=d;a.src='cover.jpg';b.src='cover_m.jpg'}
